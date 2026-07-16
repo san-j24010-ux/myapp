@@ -55,14 +55,19 @@ async function handleSearch(event) {
   event.preventDefault();
 
   const formData = new FormData(searchForm);
-  const query = Object.fromEntries(formData.entries());
+  const rawQuery = Object.fromEntries(formData.entries());
+  const query = {
+    keyword: [rawQuery.style, rawQuery.vibe, rawQuery.gender].filter(Boolean).join(' '),
+    minPrice: rawQuery.price === '10001' ? '10001' : '',
+    maxPrice: rawQuery.price && rawQuery.price !== '10001' ? rawQuery.price : '',
+  };
 
   try {
     const items = await searchItems(query);
     renderSearchResults(items);
   } catch (error) {
     console.warn('GAS search failed, fallback to dummy results', error);
-    renderSearchResults(filterDummyResults(query));
+    renderSearchResults(filterDummyResults(rawQuery));
   }
 }
 
