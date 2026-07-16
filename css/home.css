@@ -1,0 +1,37 @@
+/* home.css */
+.hero-card {
+  display: grid;
+  gap: 1rem;
+  padding: 2rem;
+  margin: 2rem 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+}
+.hero-card h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.05;
+}
+.hero-card p {
+  max-width: 60ch;
+  color: #d1d5db;
+}
+.search-panel,
+.topics,
+.search-keywords {
+  margin-bottom: 2rem;
+}
+.keyword-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.9rem;
+}
+.keyword-list li {
+  padding: 1rem;
+  background: rgba(255,255,255,0.04);
+  border-radius: 16px;
+  text-align: center;
+}
+.search-panel .tag-list a {
+  min-width: 140px;
+}

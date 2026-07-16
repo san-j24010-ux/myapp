@@ -1,0 +1,30 @@
+/* search.css */
+.search-form-section {
+  margin: 2rem 0;
+}
+.search-results {
+  margin-top: 2rem;
+}
+.search-results .card {
+  overflow: hidden;
+}
+.search-results .card-body {
+  display: grid;
+  gap: 0.65rem;
+}
+.search-results .meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: #9ca3af;
+  font-size: 0.95rem;
+}
+.search-results .actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+.search-results button {
+  width: 100%;
+}

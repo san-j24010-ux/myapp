@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StyleFinder | お気に入り</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">StyleFinder</a>
+      <nav class="global-nav" aria-label="メインナビゲーション">
+        <a href="index.html">ホーム</a>
+        <a href="search.html">検索</a>
+        <a href="ranking.html">ランキング</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section aria-labelledby="favorite-title">
+      <h1 id="favorite-title">お気に入り</h1>
+      <div class="card-grid" id="favorite-list"></div>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js" defer></script>
+  <script type="module" src="js/favorite.js" defer></script>
+</body>
+</html>

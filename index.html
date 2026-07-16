@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StyleFinder | ホーム</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">StyleFinder</a>
+      <nav class="global-nav" aria-label="メインナビゲーション">
+        <a href="search.html">検索</a>
+        <a href="favorite.html">お気に入り</a>
+        <a href="ranking.html">ランキング</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero-card" aria-labelledby="hero-title">
+      <h1 id="hero-title">Pinterest風ファッション検索</h1>
+      <p>系統・雰囲気・性別・価格帯でアイテムを探せるダークテーマUI。</p>
+      <a class="primary-button" href="search.html">今すぐ検索</a>
+    </section>
+
+    <section class="search-panel" aria-labelledby="search-panel-title">
+      <h2 id="search-panel-title">クイック検索</h2>
+      <div class="tag-list">
+        <a href="search.html?style=ストリート">ストリート</a>
+        <a href="search.html?style=Y2K">Y2K</a>
+        <a href="search.html?style=モード">モード</a>
+        <a href="search.html?style=ヴィンテージ">ヴィンテージ</a>
+      </div>
+    </section>
+
+    <section class="topics" aria-labelledby="topics-title">
+      <h2 id="topics-title">Today's Pick</h2>
+      <div class="card-grid" id="today-pick"></div>
+    </section>
+
+    <section class="search-keywords" aria-labelledby="keywords-title">
+      <h2 id="keywords-title">人気検索ワード</h2>
+      <ul class="keyword-list" id="popular-keywords"></ul>
+    </section>
+  </main>
+
+  <script type="module" src="js/app.js" defer></script>
+  <script type="module" src="js/home.js" defer></script>
+</body>
+</html>

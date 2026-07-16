@@ -1,0 +1,48 @@
+/* detail.css */
+.detail-page {
+  margin: 2rem 0;
+}
+.product-detail {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+.detail-image {
+  border-radius: 20px;
+  overflow: hidden;
+}
+.detail-image img {
+  width: 100%;
+  height: auto;
+}
+.detail-body {
+  display: grid;
+  gap: 1rem;
+}
+.detail-body h2 {
+  font-size: 1.4rem;
+}
+.detail-body .price {
+  color: #a855f7;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.detail-body .meta {
+  display: flex;
+  justify-content: space-between;
+  color: #9ca3af;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.detail-body .action-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.detail-body .secondary-button {
+  padding: 0.95rem 1.4rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: transparent;
+  color: #f8fafc;
+}
