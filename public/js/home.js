@@ -25,6 +25,46 @@ const dummyProducts = [
     brand: 'Lee',
     shop: 'Rakuten',
     imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'product-004',
+    name: 'フーデッドニットコート',
+    price: '¥13,500',
+    brand: 'UNIQLO',
+    shop: 'Rakuten',
+    imageUrl: 'https://images.unsplash.com/photo-1520975911071-72d36a5b2e31?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'product-005',
+    name: 'ボリュームスリーブシャツ',
+    price: '¥7,200',
+    brand: 'ZARA',
+    shop: 'Yahoo!ショッピング',
+    imageUrl: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'product-006',
+    name: 'ベルト付きワイドパンツ',
+    price: '¥9,100',
+    brand: 'GU',
+    shop: 'Rakuten',
+    imageUrl: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'product-007',
+    name: 'メタリックチェーンバッグ',
+    price: '¥4,750',
+    brand: 'CHARLES & KEITH',
+    shop: 'Yahoo!ショッピング',
+    imageUrl: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80'
+  },
+  {
+    id: 'product-008',
+    name: 'ワントーンスニーカー',
+    price: '¥11,300',
+    brand: 'NIKE',
+    shop: 'Rakuten',
+    imageUrl: 'https://images.unsplash.com/photo-1519741491538-6b34c2036444?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
