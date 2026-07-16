@@ -1,3 +1,5 @@
+const SPREADSHEET_ID = '1RaQFZR4cWZ1x6zMjRgkvbm55aTKqzCtzXn7oVKy2U6k';
+
 const doGet = (e) => {
   const mode = (e.parameter && e.parameter.mode) || 'default';
   let result = { success: false, mode, items: [] };
@@ -11,6 +13,9 @@ const doGet = (e) => {
       break;
     case 'rankings':
       result = getRankings();
+      break;
+    case 'keywords':
+      result = getKeywords();
       break;
     default:
       result = { success: true, message: 'StyleFinder GAS endpoint', mode };
@@ -80,6 +85,13 @@ const getRankings = () => {
   return { success: true, items };
 };
 
+const getKeywords = () => {
+  const sheet = getSheet('keywords');
+  const values = sheet.getDataRange().getValues();
+  const items = values.slice(1).map((row) => ({ keyword: row[0] }));
+  return { success: true, items };
+};
+
 const saveFavorite = (item) => {
   const sheet = getSheet('favorites');
   sheet.appendRow([item.id, item.name, item.price, item.brand, item.shop, item.imageUrl, new Date()]);
@@ -92,8 +104,15 @@ const logSearch = (keyword) => {
   return { success: true };
 };
 
+const getSpreadsheet = () => {
+  if (SPREADSHEET_ID && SPREADSHEET_ID !== 'PUT_YOUR_SPREADSHEET_ID_HERE') {
+    return SpreadsheetApp.openById(SPREADSHEET_ID);
+  }
+  return SpreadsheetApp.getActiveSpreadsheet();
+};
+
 const getSheet = (name) => {
-  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const spreadsheet = getSpreadsheet();
   const sheet = spreadsheet.getSheetByName(name);
   if (sheet) {
     return sheet;
