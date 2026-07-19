@@ -1,4 +1,5 @@
 const SPREADSHEET_ID = '1RaQFZR4cWZ1x6zMjRgkvbm55aTKqzCtzXn7oVKy2U6k';
+const RAKUTEN_APP_ID = 'fdc4ab2d-ac17-4fe3-99e0-51ed09b51238';
 
 const doGet = (e) => {
   const mode = (e.parameter && e.parameter.mode) || 'default';
