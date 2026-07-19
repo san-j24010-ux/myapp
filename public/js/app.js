@@ -1,6 +1,5 @@
 /* app.js */
 export const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwg0alV9GBUPBylCDX6kh4mi20UjcbBb9bO4F7ThGH_JcffaiZnwmGNPywnSCpzyAL0rA/exec';
-const GAS_PROXY_ENDPOINT = '/api/gas';
 
 /**
  * Fetch JSON from GAS backend with optional query parameters.
@@ -9,20 +8,25 @@ const GAS_PROXY_ENDPOINT = '/api/gas';
  */
 export async function fetchFromGas(params = {}) {
   const query = new URLSearchParams(params).toString();
-  const url = `${GAS_PROXY_ENDPOINT}?${query}`;
+  return new Promise((resolve, reject) => {
+    const callbackName = `styleFinderJsonp_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement('script');
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
 
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    },
+    window[callbackName] = (payload) => {
+      cleanup();
+      resolve(payload);
+    };
+    script.onerror = () => {
+      cleanup();
+      reject(new Error('GAS request failed.'));
+    };
+    script.src = `${GAS_ENDPOINT}?${query}&callback=${callbackName}`;
+    document.head.appendChild(script);
   });
-
-  if (!response.ok) {
-    throw new Error(`GAS request failed: ${response.status}`);
-  }
-
-  return response.json();
 }
 
 /**
