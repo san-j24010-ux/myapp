@@ -1,5 +1,6 @@
 /* app.js */
 export const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwg0alV9GBUPBylCDX6kh4mi20UjcbBb9bO4F7ThGH_JcffaiZnwmGNPywnSCpzyAL0rA/exec';
+const GAS_PROXY_ENDPOINT = '/api/gas';
 
 /**
  * Fetch JSON from GAS backend with optional query parameters.
@@ -8,7 +9,7 @@ export const GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwg0alV9GBU
  */
 export async function fetchFromGas(params = {}) {
   const query = new URLSearchParams(params).toString();
-  const url = `${GAS_ENDPOINT}?${query}`;
+  const url = `${GAS_PROXY_ENDPOINT}?${query}`;
 
   const response = await fetch(url, {
     method: 'GET',
