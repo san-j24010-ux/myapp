@@ -71,6 +71,7 @@ export function createProductCard(item) {
 
   card.addEventListener('click', (event) => {
     if (event.target !== favoriteButton) {
+      sessionStorage.setItem('styleFinder:selectedItem', JSON.stringify(item));
       window.location.href = `detail.html?id=${encodeURIComponent(item.id)}`;
     }
   });

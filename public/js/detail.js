@@ -50,7 +50,7 @@ function renderDetail(item) {
   `;
 
   document.getElementById('rakuten-link').addEventListener('click', () => {
-    window.open('https://www.rakuten.co.jp', '_blank');
+    window.open(item.itemUrl || 'https://www.rakuten.co.jp', '_blank');
   });
 
   document.getElementById('favorite-detail').addEventListener('click', () => {
@@ -61,6 +61,19 @@ function renderDetail(item) {
 
 const params = new URLSearchParams(window.location.search);
 const productId = params.get('id');
-const selectedProduct = dummyProducts.find((item) => item.id === productId) || getFavoriteFromStorage(productId) || dummyProducts[0];
+const getSelectedItemFromSession = () => {
+  try {
+    const item = JSON.parse(sessionStorage.getItem('styleFinder:selectedItem'));
+    return item && item.id === productId ? item : null;
+  } catch (error) {
+    console.warn('Failed to parse selected item', error);
+    return null;
+  }
+};
+
+const selectedProduct = getSelectedItemFromSession()
+  || getFavoriteFromStorage(productId)
+  || dummyProducts.find((item) => item.id === productId)
+  || dummyProducts[0];
 
 renderDetail(selectedProduct);
