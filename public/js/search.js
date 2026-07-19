@@ -66,8 +66,8 @@ async function handleSearch(event) {
     const items = await searchItems(query);
     renderSearchResults(items);
   } catch (error) {
-    console.warn('GAS search failed, fallback to dummy results', error);
-    renderSearchResults(filterDummyResults(rawQuery));
+    console.error('GAS search failed', error);
+    searchResults.textContent = `検索に失敗しました: ${error.message}`;
   }
 }
 
