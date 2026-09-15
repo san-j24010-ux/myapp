@@ -11,7 +11,7 @@
   <main class="app-shell">
     <div class="app-card">
       <nav class="auth-nav" aria-label="アカウントメニュー">
-        <div id="guest-nav" class="auth-nav-group">
+        <div id="guest-nav" class="auth-nav-group" hidden>
           <button id="nav-login-button" class="text-button" type="button">ログイン</button>
           <button id="nav-signup-button" class="mini-button" type="button">アカウント作成</button>
         </div>
@@ -30,7 +30,7 @@
 
       <p id="error-message" class="message message-error" role="alert" hidden></p>
 
-      <section id="start-screen" class="screen" aria-labelledby="start-title">
+      <section id="start-screen" class="screen" aria-labelledby="start-title" hidden>
         <div class="hero-icon" aria-hidden="true">💡</div>
         <h1 id="start-title">みんなの雑学クイズ</h1>
         <p class="lead">1日3分、遊びながら知識を増やそう。<br>カテゴリーや難易度を選んで挑戦できます。</p>
@@ -140,6 +140,7 @@
           <span aria-hidden="true">🔐</span>
           <h2 id="login-title">ログイン</h2>
         </div>
+        <p class="form-help">クイズを利用するにはログインが必要です。</p>
         <form id="login-form" class="auth-form" novalidate>
           <label for="login-email">メールアドレス</label>
           <input id="login-email" name="email" type="email" autocomplete="email" maxlength="254" required>
@@ -153,7 +154,7 @@
         </form>
         <div class="auth-links">
           <button id="login-to-signup-button" class="text-button" type="button">初めての方はアカウント作成</button>
-          <button id="login-home-button" class="text-button" type="button">ホームに戻る</button>
+          <button id="login-home-button" class="text-button" type="button" hidden>ホームに戻る</button>
         </div>
       </section>
 
@@ -236,7 +237,7 @@
 
         <div class="auth-links">
           <button id="signup-to-login-button" class="text-button" type="button">ログイン画面へ</button>
-          <button id="signup-home-button" class="text-button" type="button">ホームに戻る</button>
+          <button id="signup-home-button" class="text-button" type="button" hidden>ホームに戻る</button>
         </div>
       </section>
 

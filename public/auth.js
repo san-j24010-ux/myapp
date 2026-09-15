@@ -205,6 +205,7 @@
 
   async function updateAuthNavigation(user) {
     currentUser = user || null;
+    window.quizApp.setAuthState(currentUser);
     elements.guestNav.hidden = Boolean(user);
     elements.userNav.hidden = !user;
     if (!user) {
@@ -559,7 +560,7 @@
     currentUser = null;
     currentProfile = null;
     await updateAuthNavigation(null);
-    showScreen("start");
+    openLogin();
   }
 
   async function cancelSignup(destination) {
@@ -569,7 +570,7 @@
     currentUser = null;
     await updateAuthNavigation(null);
     if (destination === "login") openLogin();
-    else showScreen("start");
+    else openLogin();
   }
 
   function previewAvatar(input, preview) {
@@ -628,9 +629,12 @@
   elements.profileLogoutButton.addEventListener("click", logout);
 
   if (client) {
-    client.auth.getSession().then(({ data }) => {
-      updateAuthNavigation(data.session?.user || null);
-    });
+    client.auth.getSession()
+      .then(({ data, error }) => {
+        if (error) throw error;
+        return updateAuthNavigation(data.session?.user || null);
+      })
+      .catch(() => updateAuthNavigation(null));
     client.auth.onAuthStateChange((_event, session) => {
       window.setTimeout(() => updateAuthNavigation(session?.user || null), 0);
     });

@@ -95,6 +95,9 @@ const quizState = {
 
 let playerStats = loadStats();
 let isStarting = false;
+let authStateReady = false;
+let authenticatedUser = null;
+const PUBLIC_AUTH_SCREENS = new Set(["login", "signup"]);
 
 function createDefaultStats() {
   return {
@@ -145,13 +148,47 @@ function setText(element, value) {
   element.textContent = String(value ?? "");
 }
 
+function isAuthenticated() {
+  return authStateReady && Boolean(authenticatedUser);
+}
+
+function requireAuthentication() {
+  if (isAuthenticated()) return true;
+  showScreen("login");
+  return false;
+}
+
 function showScreen(screenName) {
+  if (!screens[screenName]) return false;
+  const targetScreen =
+    PUBLIC_AUTH_SCREENS.has(screenName) || isAuthenticated()
+      ? screenName
+      : "login";
   Object.entries(screens).forEach(([name, screen]) => {
-    screen.hidden = name !== screenName;
+    screen.hidden = name !== targetScreen;
   });
   showError("");
-  if (screenName === "start") updateHomeStats();
+  if (targetScreen === "start") updateHomeStats();
   window.scrollTo({ top: 0, behavior: "smooth" });
+  return targetScreen === screenName;
+}
+
+function setAuthState(user) {
+  authStateReady = true;
+  authenticatedUser = user || null;
+  showLoading(false);
+
+  const activeScreenName = Object.entries(screens)
+    .find(([, screen]) => !screen.hidden)?.[0];
+
+  if (!authenticatedUser) {
+    if (!activeScreenName || !PUBLIC_AUTH_SCREENS.has(activeScreenName)) {
+      showScreen("login");
+    }
+    return;
+  }
+
+  if (!activeScreenName) showScreen("start");
 }
 
 function showLoading(isVisible, message = "通信中です...") {
@@ -241,6 +278,7 @@ async function fetchQuestions(settings) {
 }
 
 async function startQuiz() {
+  if (!requireAuthentication()) return;
   if (isStarting) return;
   isStarting = true;
   elements.startButton.disabled = true;
@@ -268,6 +306,7 @@ async function startQuiz() {
 }
 
 function startReviewQuiz() {
+  if (!requireAuthentication()) return;
   if (isStarting) return;
   const reviewQuestions = Object.values(playerStats.incorrectQuestions)
     .map(normalizeQuestion)
@@ -433,6 +472,7 @@ function validatePlayerName(rawName) {
 
 async function saveScore(event) {
   event.preventDefault();
+  if (!requireAuthentication()) return;
   if (quizState.mode === "review" || quizState.scoreSaved || elements.saveScoreButton.disabled) return;
   const playerName = elements.playerName.value.trim();
   const validationMessage = validatePlayerName(playerName);
@@ -482,6 +522,7 @@ function findWeakCategory() {
 }
 
 function showStats() {
+  if (!requireAuthentication()) return;
   const accuracy = playerStats.totalAnswered > 0
     ? Math.round((playerStats.totalCorrect / playerStats.totalAnswered) * 100)
     : 0;
@@ -503,6 +544,7 @@ async function fetchRanking() {
 }
 
 async function showRanking() {
+  if (!requireAuthentication()) return;
   showScreen("ranking");
   elements.rankingBody.replaceChildren();
   elements.rankingEmpty.hidden = true;
@@ -620,6 +662,9 @@ elements.statsReviewButton.addEventListener("click", startReviewQuiz);
 elements.statsTopButton.addEventListener("click", () => showScreen("start"));
 elements.topButton.addEventListener("click", () => showScreen("start"));
 
-window.quizApp = Object.freeze({ showScreen });
+window.quizApp = Object.freeze({ isAuthenticated, setAuthState, showScreen });
 updateHomeStats();
-showScreen("start");
+Object.values(screens).forEach((screen) => {
+  screen.hidden = true;
+});
+showLoading(true, "ログイン状態を確認しています...");
