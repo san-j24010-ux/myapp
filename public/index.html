@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="全10問の4択で遊べる、みんなの雑学クイズです。">
+  <meta name="description" content="苦手を復習しながら毎日楽しく学べる、4択の雑学クイズです。">
   <title>みんなの雑学クイズ</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -22,9 +22,50 @@
       <section id="start-screen" class="screen" aria-labelledby="start-title">
         <div class="hero-icon" aria-hidden="true">💡</div>
         <h1 id="start-title">みんなの雑学クイズ</h1>
-        <p class="lead">身近な雑学に4択でチャレンジ！<br>全10問、100点満点を目指そう。</p>
+        <p class="lead">1日3分、遊びながら知識を増やそう。<br>カテゴリーや難易度を選んで挑戦できます。</p>
+
+        <div class="home-stats" aria-label="これまでの記録">
+          <div><span>挑戦</span><strong id="home-attempts">0回</strong></div>
+          <div><span>最高</span><strong id="home-best-score">0点</strong></div>
+          <div><span>復習</span><strong id="home-review-count">0問</strong></div>
+        </div>
+
+        <form id="quiz-settings" class="quiz-settings">
+          <div class="setting-field">
+            <label for="category-select">カテゴリー</label>
+            <select id="category-select" name="category">
+              <option value="all">すべて</option>
+              <option value="一般常識">一般常識</option>
+              <option value="科学">科学</option>
+              <option value="歴史">歴史</option>
+              <option value="地理">地理</option>
+              <option value="食べ物">食べ物</option>
+              <option value="スポーツ">スポーツ</option>
+            </select>
+          </div>
+          <div class="setting-field">
+            <label for="difficulty-select">難易度</label>
+            <select id="difficulty-select" name="difficulty">
+              <option value="all">すべて</option>
+              <option value="かんたん">かんたん</option>
+              <option value="ふつう">ふつう</option>
+              <option value="むずかしい">むずかしい</option>
+            </select>
+          </div>
+          <div class="setting-field">
+            <label for="question-count-select">問題数</label>
+            <select id="question-count-select" name="questionCount">
+              <option value="5">5問</option>
+              <option value="10" selected>10問</option>
+              <option value="20">20問</option>
+            </select>
+          </div>
+        </form>
+
         <div class="button-stack">
           <button id="start-button" class="button button-primary" type="button">クイズを始める</button>
+          <button id="review-button" class="button button-accent" type="button">間違えた問題を復習</button>
+          <button id="stats-button" class="button button-secondary" type="button">マイ記録を見る</button>
           <button id="start-ranking-button" class="button button-secondary" type="button">ランキングを見る</button>
         </div>
       </section>
@@ -33,6 +74,10 @@
         <div class="quiz-status" aria-label="クイズの進み具合">
           <p>問題 <strong id="current-number">1</strong> / <strong id="total-number">10</strong></p>
           <p>スコア <strong id="current-score">0</strong>点</p>
+        </div>
+        <div class="quiz-meta">
+          <span id="quiz-mode-label">通常チャレンジ</span>
+          <span id="combo-badge" class="combo-badge" hidden>🔥 <strong id="combo-count">0</strong>コンボ</span>
         </div>
         <div class="progress-track" aria-hidden="true">
           <div id="progress-bar" class="progress-bar"></div>
@@ -52,6 +97,8 @@
         <div class="result-score">
           <strong id="final-score">0</strong><span>点</span>
         </div>
+        <div id="result-title-badge" class="title-badge">雑学ビギナー</div>
+        <p id="result-comment" class="result-comment"></p>
         <dl class="result-details">
           <div><dt>正解数</dt><dd><span id="final-correct">0</span> / <span id="final-total">0</span>問</dd></div>
           <div><dt>正答率</dt><dd id="final-rate">0%</dd></div>
@@ -64,10 +111,37 @@
           <button id="save-score-button" class="button button-primary" type="submit">スコアを登録する</button>
         </form>
         <p id="save-message" class="message message-success" role="status" hidden></p>
+        <p id="result-mode-message" class="message message-info" hidden></p>
 
         <div class="button-stack compact">
           <button id="retry-button" class="button button-secondary" type="button">もう一度遊ぶ</button>
+          <button id="review-wrong-button" class="button button-accent" type="button">間違えた問題に再挑戦</button>
+          <button id="result-stats-button" class="button button-secondary" type="button">マイ記録を見る</button>
           <button id="result-ranking-button" class="button button-secondary" type="button">ランキングを見る</button>
+        </div>
+      </section>
+
+      <section id="stats-screen" class="screen" aria-labelledby="stats-title" hidden>
+        <div class="section-heading">
+          <span aria-hidden="true">📊</span>
+          <h2 id="stats-title">マイ記録</h2>
+        </div>
+        <p class="stats-note">この端末で遊んだ記録です。</p>
+        <div class="stats-grid">
+          <div class="stat-card"><span>挑戦回数</span><strong id="stats-attempts">0回</strong></div>
+          <div class="stat-card"><span>最高スコア</span><strong id="stats-best-score">0点</strong></div>
+          <div class="stat-card"><span>通算正答率</span><strong id="stats-accuracy">0%</strong></div>
+          <div class="stat-card"><span>最大コンボ</span><strong id="stats-max-combo">0</strong></div>
+          <div class="stat-card"><span>総回答数</span><strong id="stats-total-answered">0問</strong></div>
+          <div class="stat-card"><span>復習待ち</span><strong id="stats-review-count">0問</strong></div>
+        </div>
+        <div class="insight-card">
+          <span>重点的に復習したいカテゴリー</span>
+          <strong id="stats-weak-category">まだ記録がありません</strong>
+        </div>
+        <div class="button-stack compact">
+          <button id="stats-review-button" class="button button-accent" type="button">復習クイズを始める</button>
+          <button id="stats-top-button" class="button button-secondary" type="button">トップへ戻る</button>
         </div>
       </section>
 
