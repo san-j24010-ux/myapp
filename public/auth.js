@@ -267,7 +267,7 @@
       currentUser = data.user;
       elements.loginForm.reset();
       await updateAuthNavigation(currentUser);
-      await showProfile();
+      showScreen("start");
     } catch (error) {
       showMessage(elements.loginMessage, translateAuthError(error));
     } finally {
