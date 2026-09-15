@@ -11,18 +11,37 @@ create table if not exists public.profiles (
   gender text not null default '回答しない'
     check (gender in ('男性', '女性', 'ノンバイナリー', 'その他', '回答しない')),
   age smallint check (age between 1 and 120),
+  bio text not null default '',
   avatar_path text check (avatar_path is null or split_part(avatar_path, '/', 1) = id::text),
   email_verified boolean not null default false,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
+alter table public.profiles
+add column if not exists bio text not null default '';
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint
+    where conname = 'profiles_bio_length_check'
+      and conrelid = 'public.profiles'::regclass
+  ) then
+    alter table public.profiles
+    add constraint profiles_bio_length_check
+    check (char_length(bio) <= 300);
+  end if;
+end
+$$;
+
 alter table public.profiles enable row level security;
 
 revoke all on table public.profiles from anon, authenticated;
 grant usage on schema public to authenticated;
 grant select on table public.profiles to authenticated;
-grant update (name, gender, age, avatar_path) on table public.profiles to authenticated;
+grant update (name, gender, age, bio, avatar_path) on table public.profiles to authenticated;
 
 drop policy if exists "profiles_select_own" on public.profiles;
 create policy "profiles_select_own"

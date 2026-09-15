@@ -62,6 +62,7 @@
     signupName: document.getElementById("signup-name"),
     signupGender: document.getElementById("signup-gender"),
     signupAge: document.getElementById("signup-age"),
+    signupBio: document.getElementById("signup-bio"),
     signupAvatar: document.getElementById("signup-avatar"),
     signupAvatarPreview: document.getElementById("signup-avatar-preview"),
     signupProfileMessage: document.getElementById("signup-profile-message"),
@@ -73,6 +74,7 @@
     profileName: document.getElementById("profile-name"),
     profileGender: document.getElementById("profile-gender"),
     profileAge: document.getElementById("profile-age"),
+    profileBio: document.getElementById("profile-bio"),
     profileAvatarFile: document.getElementById("profile-avatar-file"),
     profileAvatarPreview: document.getElementById("profile-avatar-preview"),
     profileAvatarImage: document.getElementById("profile-avatar-image"),
@@ -125,12 +127,13 @@
     return "";
   }
 
-  function validateProfile(name, age) {
+  function validateProfile(name, age, bio) {
     if (!name || name.length > 40) return "名前は1〜40文字で入力してください。";
     const numericAge = Number(age);
     if (!Number.isInteger(numericAge) || numericAge < 1 || numericAge > 120) {
       return "年齢は1〜120の整数で入力してください。";
     }
+    if (String(bio || "").length > 300) return "自己紹介は300文字以内で入力してください。";
     return "";
   }
 
@@ -410,13 +413,14 @@
       name: values.name,
       gender: values.gender,
       age: values.age,
+      bio: values.bio,
     };
     if (newAvatarPath) updateValues.avatar_path = newAvatarPath;
     const { data, error } = await client
       .from("profiles")
       .update(updateValues)
       .eq("id", user.id)
-      .select("id, email, name, gender, age, avatar_path, email_verified")
+      .select("id, email, name, gender, age, bio, avatar_path, email_verified")
       .single();
     if (error) throw error;
     return data;
@@ -429,9 +433,10 @@
       name: elements.signupName.value.trim(),
       gender: elements.signupGender.value,
       age: Number(elements.signupAge.value),
+      bio: elements.signupBio.value.trim(),
     };
     const file = elements.signupAvatar.files[0] || null;
-    const validationMessage = validateProfile(values.name, values.age) || validateAvatar(file);
+    const validationMessage = validateProfile(values.name, values.age, values.bio) || validateAvatar(file);
     if (validationMessage) {
       showMessage(elements.signupProfileMessage, validationMessage);
       return;
@@ -485,7 +490,7 @@
     try {
       const { data, error } = await client
         .from("profiles")
-        .select("id, email, name, gender, age, avatar_path, email_verified")
+        .select("id, email, name, gender, age, bio, avatar_path, email_verified")
         .eq("id", currentUser.id)
         .single();
       if (error) throw error;
@@ -494,6 +499,7 @@
       elements.profileName.value = data.name || "";
       elements.profileGender.value = data.gender || "回答しない";
       elements.profileAge.value = data.age || "";
+      elements.profileBio.value = data.bio || "";
       elements.profileAvatarFile.value = "";
       elements.profileAvatarPreview.hidden = true;
       await renderStoredAvatar(data.avatar_path);
@@ -512,11 +518,12 @@
       name: elements.profileName.value.trim(),
       gender: elements.profileGender.value,
       age: Number(elements.profileAge.value),
+      bio: elements.profileBio.value.trim(),
     };
     const file = elements.profileAvatarFile.files[0] || null;
     const validationMessage =
       validateEmail(email)
-      || validateProfile(values.name, values.age)
+      || validateProfile(values.name, values.age, values.bio)
       || validateAvatar(file);
     if (validationMessage) {
       showMessage(elements.profileMessage, validationMessage);

@@ -685,7 +685,8 @@ td:first-child {
 }
 
 .auth-form input,
-.auth-form select {
+.auth-form select,
+.auth-form textarea {
   width: 100%;
   min-height: 50px;
   padding: 10px 14px;
@@ -693,6 +694,12 @@ td:first-child {
   background: #fff;
   border: 2px solid var(--border);
   border-radius: 12px;
+}
+
+.auth-form textarea {
+  min-height: 110px;
+  line-height: 1.6;
+  resize: vertical;
 }
 
 .auth-form input[type="file"] {
