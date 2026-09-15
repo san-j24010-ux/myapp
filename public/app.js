@@ -57,6 +57,7 @@ const elements = {
   reviewWrongButton: document.getElementById("review-wrong-button"),
   resultStatsButton: document.getElementById("result-stats-button"),
   resultRankingButton: document.getElementById("result-ranking-button"),
+  skipSaveHomeButton: document.getElementById("skip-save-home-button"),
   statsAttempts: document.getElementById("stats-attempts"),
   statsBestScore: document.getElementById("stats-best-score"),
   statsAccuracy: document.getElementById("stats-accuracy"),
@@ -608,6 +609,7 @@ elements.retryButton.addEventListener("click", startQuiz);
 elements.reviewWrongButton.addEventListener("click", startReviewQuiz);
 elements.resultStatsButton.addEventListener("click", showStats);
 elements.resultRankingButton.addEventListener("click", showRanking);
+elements.skipSaveHomeButton.addEventListener("click", () => showScreen("start"));
 elements.statsReviewButton.addEventListener("click", startReviewQuiz);
 elements.statsTopButton.addEventListener("click", () => showScreen("start"));
 elements.topButton.addEventListener("click", () => showScreen("start"));
