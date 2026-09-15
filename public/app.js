@@ -11,6 +11,9 @@ const screens = {
   result: document.getElementById("result-screen"),
   stats: document.getElementById("stats-screen"),
   ranking: document.getElementById("ranking-screen"),
+  login: document.getElementById("login-screen"),
+  signup: document.getElementById("signup-screen"),
+  profile: document.getElementById("profile-screen"),
 };
 
 const elements = {
@@ -617,5 +620,6 @@ elements.statsReviewButton.addEventListener("click", startReviewQuiz);
 elements.statsTopButton.addEventListener("click", () => showScreen("start"));
 elements.topButton.addEventListener("click", () => showScreen("start"));
 
+window.quizApp = Object.freeze({ showScreen });
 updateHomeStats();
 showScreen("start");
