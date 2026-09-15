@@ -1,6 +1,6 @@
 {
   "scriptId": "1adxXhiLEq9n8JrMjKlxkac0Lmd7TDWOgdrTc0rX52A-sslmeY2iFGT4r",
-  "rootDir": "gas",
+  "rootDir": "quiz-game/gas",
   "scriptExtensions": [
     ".js",
     ".gs"
