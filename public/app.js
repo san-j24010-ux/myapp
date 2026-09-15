@@ -454,9 +454,10 @@ async function saveScore(event) {
       totalQuestions: quizState.questions.length,
     });
     quizState.scoreSaved = true;
-    setText(elements.saveMessage, "スコアを登録しました！");
+    setText(elements.saveMessage, "スコアを登録しました！ホームへ戻ります...");
     elements.saveMessage.hidden = false;
     setText(elements.saveScoreButton, "登録済み");
+    window.setTimeout(() => showScreen("start"), 1200);
   } catch (error) {
     showError(error.message || "スコアの登録に失敗しました。");
     elements.saveScoreButton.disabled = false;
