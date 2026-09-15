@@ -2,53 +2,100 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StyleFinder | ホーム</title>
-  <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/home.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="全10問の4択で遊べる、みんなの雑学クイズです。">
+  <title>みんなの雑学クイズ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="index.html" class="brand">StyleFinder</a>
-      <nav class="global-nav" aria-label="メインナビゲーション">
-        <a href="search.html">検索</a>
-        <a href="favorite.html">お気に入り</a>
-        <a href="ranking.html">ランキング</a>
-      </nav>
-    </div>
-  </header>
+  <main class="app-shell">
+    <div class="app-card">
+      <p class="app-badge" aria-hidden="true">🧠 QUIZ GAME</p>
 
-  <main class="container">
-    <section class="hero-card" aria-labelledby="hero-title">
-      <h1 id="hero-title">Pinterest風ファッション検索</h1>
-      <p>系統・雰囲気・性別・価格帯でアイテムを探せるダークテーマUI。</p>
-      <a class="primary-button" href="search.html">今すぐ検索</a>
-    </section>
-
-    <section class="search-panel" aria-labelledby="search-panel-title">
-      <h2 id="search-panel-title">クイック検索</h2>
-      <div class="tag-list">
-        <a href="search.html?style=ストリート">ストリート</a>
-        <a href="search.html?style=Y2K">Y2K</a>
-        <a href="search.html?style=モード">モード</a>
-        <a href="search.html?style=ヴィンテージ">ヴィンテージ</a>
+      <div id="loading" class="loading" role="status" aria-live="polite" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="loading-text">通信中です...</span>
       </div>
-    </section>
 
-    <section class="topics" aria-labelledby="topics-title">
-      <h2 id="topics-title">Today's Pick</h2>
-      <div class="card-grid" id="today-pick"></div>
-    </section>
+      <p id="error-message" class="message message-error" role="alert" hidden></p>
 
-    <section class="search-keywords" aria-labelledby="keywords-title">
-      <h2 id="keywords-title">人気検索ワード</h2>
-      <ul class="keyword-list" id="popular-keywords"></ul>
-    </section>
+      <section id="start-screen" class="screen" aria-labelledby="start-title">
+        <div class="hero-icon" aria-hidden="true">💡</div>
+        <h1 id="start-title">みんなの雑学クイズ</h1>
+        <p class="lead">身近な雑学に4択でチャレンジ！<br>全10問、100点満点を目指そう。</p>
+        <div class="button-stack">
+          <button id="start-button" class="button button-primary" type="button">クイズを始める</button>
+          <button id="start-ranking-button" class="button button-secondary" type="button">ランキングを見る</button>
+        </div>
+      </section>
+
+      <section id="quiz-screen" class="screen" aria-labelledby="question-text" hidden>
+        <div class="quiz-status" aria-label="クイズの進み具合">
+          <p>問題 <strong id="current-number">1</strong> / <strong id="total-number">10</strong></p>
+          <p>スコア <strong id="current-score">0</strong>点</p>
+        </div>
+        <div class="progress-track" aria-hidden="true">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <h2 id="question-text" class="question-text"></h2>
+        <div id="choices" class="choices" role="group" aria-label="回答の選択肢"></div>
+        <div id="answer-feedback" class="answer-feedback" aria-live="polite" hidden>
+          <p id="answer-result" class="answer-result"></p>
+          <p id="answer-explanation" class="answer-explanation"></p>
+        </div>
+        <button id="next-button" class="button button-primary" type="button" hidden>次の問題へ</button>
+      </section>
+
+      <section id="result-screen" class="screen" aria-labelledby="result-title" hidden>
+        <div class="hero-icon" aria-hidden="true">🎉</div>
+        <h2 id="result-title">結果発表</h2>
+        <div class="result-score">
+          <strong id="final-score">0</strong><span>点</span>
+        </div>
+        <dl class="result-details">
+          <div><dt>正解数</dt><dd><span id="final-correct">0</span> / <span id="final-total">0</span>問</dd></div>
+          <div><dt>正答率</dt><dd id="final-rate">0%</dd></div>
+        </dl>
+
+        <form id="score-form" class="score-form" novalidate>
+          <label for="player-name">ランキング登録名（1〜20文字）</label>
+          <input id="player-name" name="playerName" type="text" minlength="1" maxlength="20" autocomplete="nickname" required>
+          <p id="name-error" class="field-error" role="alert" hidden></p>
+          <button id="save-score-button" class="button button-primary" type="submit">スコアを登録する</button>
+        </form>
+        <p id="save-message" class="message message-success" role="status" hidden></p>
+
+        <div class="button-stack compact">
+          <button id="retry-button" class="button button-secondary" type="button">もう一度遊ぶ</button>
+          <button id="result-ranking-button" class="button button-secondary" type="button">ランキングを見る</button>
+        </div>
+      </section>
+
+      <section id="ranking-screen" class="screen" aria-labelledby="ranking-title" hidden>
+        <div class="section-heading">
+          <span aria-hidden="true">🏆</span>
+          <h2 id="ranking-title">ランキング TOP 10</h2>
+        </div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">順位</th>
+                <th scope="col">名前</th>
+                <th scope="col">スコア</th>
+                <th scope="col">正解数</th>
+                <th scope="col">挑戦日時</th>
+              </tr>
+            </thead>
+            <tbody id="ranking-body"></tbody>
+          </table>
+          <p id="ranking-empty" class="empty-message" hidden>まだ記録がありません</p>
+        </div>
+        <button id="top-button" class="button button-secondary" type="button">トップへ戻る</button>
+      </section>
+    </div>
   </main>
 
-  <script type="module" src="js/app.js" defer></script>
-  <script type="module" src="js/home.js" defer></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
