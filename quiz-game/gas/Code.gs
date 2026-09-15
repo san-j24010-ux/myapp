@@ -85,6 +85,35 @@ function getQuestions_(params) {
     return result;
   }, []);
 
+  // 旧データの不完全な行が残っていても、未登録のサンプル問題は出題可能にします。
+  const sheetRows = values.slice(1);
+  const returnedIds = questions.map(function(question) { return String(question.id); });
+  getAllSampleQuestions_().forEach(function(sample) {
+    const sampleId = String(sample[0]);
+    if (returnedIds.indexOf(sampleId) !== -1) return;
+
+    const existingRow = sheetRows.find(function(row) { return String(row[0]) === sampleId; });
+    const explicitlyDisabled = existingRow
+      && existingRow[8] !== true
+      && String(existingRow[8]).toUpperCase() !== 'TRUE';
+    if (explicitlyDisabled) return;
+
+    const sampleCategory = String(sample[9]);
+    const sampleDifficulty = String(sample[10]);
+    if (categoryFilter !== 'all' && sampleCategory !== categoryFilter) return;
+    if (difficultyFilter !== 'all' && sampleDifficulty !== difficultyFilter) return;
+
+    questions.push({
+      id: sample[0],
+      question: String(sample[1]),
+      choices: sample.slice(2, 6).map(String),
+      correct: Number(sample[6]),
+      explanation: String(sample[7]),
+      category: sampleCategory,
+      difficulty: sampleDifficulty,
+    });
+  });
+
   if (questions.length === 0) {
     return createFailure_('出題できる有効な問題がありません。');
   }
@@ -218,13 +247,14 @@ function ensureQuestionData_() {
   try {
     lock.waitLock(10000);
     setHeaders_(sheet, QUESTION_HEADERS);
+    const allSamples = getAllSampleQuestions_();
 
     const existingIds = sheet.getLastRow() <= 1
       ? []
       : sheet.getRange(2, 1, sheet.getLastRow() - 1, 1)
         .getValues()
         .map(function(row) { return String(row[0]); });
-    const missingSamples = SAMPLE_QUESTIONS.filter(function(question) {
+    const missingSamples = allSamples.filter(function(question) {
       return existingIds.indexOf(String(question[0])) === -1;
     });
 
@@ -238,7 +268,7 @@ function ensureQuestionData_() {
     if (dataRowCount > 0) {
       const rows = sheet.getRange(2, 1, dataRowCount, QUESTION_HEADERS.length).getValues();
       const sampleMap = {};
-      SAMPLE_QUESTIONS.forEach(function(sample) {
+      allSamples.forEach(function(sample) {
         sampleMap[String(sample[0])] = sample;
       });
       let needsMetadataUpdate = false;
@@ -341,6 +371,11 @@ function createJsonResponse_(payload, callback) {
       .setContent(callback + '(' + json + ');');
   }
   return output.setMimeType(ContentService.MimeType.JSON).setContent(json);
+}
+
+/** 基本問題と追加問題を結合します。 */
+function getAllSampleQuestions_() {
+  return SAMPLE_QUESTIONS.concat(getAdditionalQuestions_());
 }
 
 const SAMPLE_QUESTIONS = [
