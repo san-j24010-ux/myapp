@@ -539,7 +539,10 @@ function showStats() {
 }
 
 async function fetchRanking() {
-  const data = await apiRequest({ mode: "getRanking" });
+  const data = await jsonpRequest({
+    mode: "getRanking",
+    action: "getRanking",
+  });
   return Array.isArray(data.ranking) ? data.ranking : [];
 }
 
