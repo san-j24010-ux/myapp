@@ -177,6 +177,10 @@ select:focus-visible {
   background: var(--secondary);
 }
 
+.quiz-home-button {
+  margin-top: 12px;
+}
+
 .button-accent {
   color: #714800;
   background: #fff0c7;

@@ -41,6 +41,7 @@ const elements = {
   answerResult: document.getElementById("answer-result"),
   answerExplanation: document.getElementById("answer-explanation"),
   nextButton: document.getElementById("next-button"),
+  quizHomeButton: document.getElementById("quiz-home-button"),
   finalScore: document.getElementById("final-score"),
   finalCorrect: document.getElementById("final-correct"),
   finalTotal: document.getElementById("final-total"),
@@ -604,6 +605,7 @@ elements.reviewButton.addEventListener("click", startReviewQuiz);
 elements.statsButton.addEventListener("click", showStats);
 elements.startRankingButton.addEventListener("click", showRanking);
 elements.nextButton.addEventListener("click", goToNextQuestion);
+elements.quizHomeButton.addEventListener("click", () => showScreen("start"));
 elements.scoreForm.addEventListener("submit", saveScore);
 elements.retryButton.addEventListener("click", startQuiz);
 elements.reviewWrongButton.addEventListener("click", startReviewQuiz);
