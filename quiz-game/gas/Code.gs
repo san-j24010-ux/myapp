@@ -375,7 +375,9 @@ function createJsonResponse_(payload, callback) {
 
 /** 基本問題と追加問題を結合します。 */
 function getAllSampleQuestions_() {
-  return SAMPLE_QUESTIONS.concat(getAdditionalQuestions_());
+  return SAMPLE_QUESTIONS
+    .concat(getAdditionalQuestions_())
+    .concat(getMusicQuestions_());
 }
 
 const SAMPLE_QUESTIONS = [
