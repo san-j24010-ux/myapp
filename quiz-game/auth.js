@@ -148,6 +148,9 @@
 
   function translateAuthError(error) {
     const message = String(error?.message || "");
+    if (/email not confirmed|email_not_confirmed/i.test(message)) {
+      return "メールアドレスの確認が完了していません。確認メールをご確認ください。";
+    }
     if (/invalid login credentials/i.test(message)) {
       return "メールアドレスまたはパスワードが正しくありません。";
     }
@@ -162,6 +165,9 @@
     }
     if (/already registered|already exists|duplicate/i.test(message)) {
       return "このメールアドレスはすでに登録されています。ログインしてください。";
+    }
+    if (/failed to fetch|networkerror|network request failed|load failed/i.test(message)) {
+      return "認証サービスに接続できませんでした。通信状態を確認して再度お試しください。";
     }
     return "処理に失敗しました。時間をおいて再度お試しください。";
   }
@@ -217,12 +223,16 @@
     }
     elements.navUserName.textContent = user.email || "ログイン中";
     if (!client) return;
-    const { data } = await client
-      .from("profiles")
-      .select("name")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (data?.name) elements.navUserName.textContent = data.name;
+    try {
+      const { data, error } = await client
+        .from("profiles")
+        .select("name")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!error && data?.name) elements.navUserName.textContent = data.name;
+    } catch (error) {
+      elements.navUserName.textContent = user.email || "ログイン中";
+    }
   }
 
   async function sendOtp(email) {

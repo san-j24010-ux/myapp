@@ -3,6 +3,7 @@
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwg0alV9GBUPBylCDX6kh4mi20UjcbBb9bO4F7ThGH_JcffaiZnwmGNPywnSCpzyAL0rA/exec";
 const API_TIMEOUT_MS = 15000;
 const STORAGE_KEY = "quizGameStatsV2";
+const THEME_STORAGE_KEY = "quizGameTheme";
 const MAX_REVIEW_QUESTIONS = 20;
 
 const screens = {
@@ -17,6 +18,7 @@ const screens = {
 };
 
 const elements = {
+  themeToggle: document.getElementById("theme-toggle"),
   loading: document.getElementById("loading"),
   loadingText: document.getElementById("loading-text"),
   errorMessage: document.getElementById("error-message"),
@@ -664,6 +666,34 @@ elements.skipSaveHomeButton.addEventListener("click", () => showScreen("start"))
 elements.statsReviewButton.addEventListener("click", startReviewQuiz);
 elements.statsTopButton.addEventListener("click", () => showScreen("start"));
 elements.topButton.addEventListener("click", () => showScreen("start"));
+
+function applyTheme(theme, persist = false) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  elements.themeToggle.setAttribute("aria-pressed", String(isDark));
+  const toggleLabel = isDark ? "ライトモードに切り替え" : "ダークモードに切り替え";
+  elements.themeToggle.setAttribute("aria-label", toggleLabel);
+  elements.themeToggle.title = toggleLabel;
+  elements.themeToggle.textContent = isDark ? "☀" : "☾";
+  if (persist) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, isDark ? "dark" : "light");
+    } catch (error) {
+      return;
+    }
+  }
+}
+
+let savedTheme = "light";
+try {
+  savedTheme = localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
+} catch (error) {
+  savedTheme = "light";
+}
+applyTheme(savedTheme);
+elements.themeToggle.addEventListener("click", () => {
+  applyTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark", true);
+});
 
 window.quizApp = Object.freeze({ isAuthenticated, setAuthState, showScreen });
 updateHomeStats();
