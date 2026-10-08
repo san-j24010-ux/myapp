@@ -119,6 +119,11 @@
           <div><dt>正答率</dt><dd id="final-rate">0%</dd></div>
         </dl>
 
+        <div id="ai-feedback" class="ai-feedback" aria-live="polite" hidden>
+          <h3>AIフィードバック</h3>
+          <p id="ai-feedback-text"></p>
+        </div>
+
         <form id="score-form" class="score-form" novalidate>
           <label for="player-name">ランキング登録名（1〜20文字）</label>
           <input id="player-name" name="playerName" type="text" minlength="1" maxlength="20" autocomplete="nickname" required>

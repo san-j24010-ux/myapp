@@ -51,6 +51,8 @@ const elements = {
   finalRate: document.getElementById("final-rate"),
   resultTitleBadge: document.getElementById("result-title-badge"),
   resultComment: document.getElementById("result-comment"),
+  aiFeedback: document.getElementById("ai-feedback"),
+  aiFeedbackText: document.getElementById("ai-feedback-text"),
   scoreForm: document.getElementById("score-form"),
   playerName: document.getElementById("player-name"),
   nameError: document.getElementById("name-error"),
@@ -467,6 +469,8 @@ function showResult() {
   setText(elements.finalRate, `${score}%`);
   setText(elements.resultTitleBadge, title);
   setText(elements.resultComment, comment);
+  setText(elements.aiFeedbackText, generateAiFeedback());
+  elements.aiFeedback.hidden = false;
   elements.scoreForm.hidden = quizState.mode === "review";
   elements.resultModeMessage.hidden = quizState.mode !== "review";
   if (quizState.mode === "review") {
@@ -477,6 +481,32 @@ function showResult() {
   elements.reviewWrongButton.disabled = reviewCount === 0;
   showScreen("result");
   if (quizState.mode === "normal") elements.playerName.focus();
+}
+
+function generateAiFeedback() {
+  const total = Math.max(1, quizState.questions.length || 0);
+  const correctCount = Math.max(0, quizState.correctCount || 0);
+  const accuracy = Math.round((correctCount / total) * 100);
+  const weakCategory = findWeakCategory();
+  const wrongCount = Math.max(total - correctCount, 0);
+  const comboText = quizState.maxCombo >= 3 ? `連続正解は${quizState.maxCombo}問まで伸びています。` : "連続正解がもう少し出せると伸びます。";
+
+  let strengthText = "基礎の定着をさらに強めましょう。";
+  if (accuracy >= 80) {
+    strengthText = "かなり安定しています。知識の定着が良い状態です。";
+  } else if (accuracy >= 60) {
+    strengthText = "悪くないペースです。少しの見直しで更に伸びます。";
+  } else if (accuracy >= 40) {
+    strengthText = "まだ伸びしろがあります。解説を見直して理解を深めましょう。";
+  }
+
+  const actionList = [
+    wrongCount > 0 ? `今回のミスは${wrongCount}問ありました。特に解説をもう一度読んで、なぜ間違えたかを確認しましょう。` : "今回はミスが少なく、基本理解がかなり固まっています。",
+    weakCategory !== "まだ記録がありません" ? `弱い分野は「${weakCategory}」です。次回はこのカテゴリを優先して復習すると伸びやすいです。` : "まだ十分な記録がありません。まずは基本問題を繰り返してデータを作りましょう。",
+    comboText,
+  ];
+
+  return `${strengthText} 今回の成績は ${correctCount}/${total} 問正解で ${accuracy}% でした。${actionList.join(" ")}`;
 }
 
 function validatePlayerName(rawName) {
