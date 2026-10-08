@@ -1,7 +1,7 @@
 "use strict";
 
 (() => {
-  const OTP_RESEND_SECONDS = 60;
+  const OTP_RESEND_SECONDS = 20;
   const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
   const ALLOWED_AVATAR_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
   const config = window.SUPABASE_CONFIG || {};
