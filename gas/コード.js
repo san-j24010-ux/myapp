@@ -1,5 +1,8 @@
 const SPREADSHEET_ID = '1RaQFZR4cWZ1x6zMjRgkvbm55aTKqzCtzXn7oVKy2U6k';
 const RAKUTEN_APP_ID = 'fdc4ab2d-ac17-4fe3-99e0-51ed09b51238';
+const RAKUTEN_ACCESS_KEY = PropertiesService.getScriptProperties()
+  .getProperty('RAKUTEN_ACCESS_KEY');
+const APP_ORIGIN = 'https://myapp-9us.pages.dev';
 
 const doGet = (e) => {
   const mode = (e.parameter && e.parameter.mode) || 'default';
@@ -22,7 +25,7 @@ const doGet = (e) => {
       result = { success: true, message: 'StyleFinder GAS endpoint', mode };
   }
 
-  return createJsonOutput(result);
+  return createJsonOutput(result, e.parameter && e.parameter.callback);
 };
 
 const doPost = (e) => {
@@ -45,15 +48,93 @@ const doPost = (e) => {
 };
 
 const searchItems = (params) => {
-  const dummyItems = [
-    { id: 'item-001', name: 'ダークストリートジャケット', price: '¥12,800', brand: 'H&M', shop: 'Rakuten', imageUrl: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000&q=80' },
-    { id: 'item-002', name: 'Y2K シルバーネックレス', price: '¥3,490', brand: 'ZARA', shop: 'Yahoo!ショッピング', imageUrl: 'https://images.unsplash.com/photo-1495121605193-b116b5b9c5d1?auto=format&fit=crop&w=1000&q=80' },
-    { id: 'item-003', name: 'ブラックレザーシューズ', price: '¥9,700', brand: 'CONVERSE', shop: 'Rakuten', imageUrl: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1000&q=80' },
-  ];
+  const keyword = params.keyword || params.style || params.vibe || '';
+  const minPrice = params.minPrice || '';
+  const maxPrice = params.maxPrice || '';
+  const gender = params.gender || '';
+
+  if (!RAKUTEN_APP_ID || !RAKUTEN_ACCESS_KEY) {
+    return {
+      success: false,
+      error: 'Rakuten Application ID or Access Key is not configured.',
+      items: [],
+    };
+  }
+
+  const endpoint = 'https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260701';
+  const queryParams = {
+    applicationId: RAKUTEN_APP_ID,
+    accessKey: RAKUTEN_ACCESS_KEY,
+    format: 'json',
+    formatVersion: 2,
+    keyword: keyword || 'ファッション',
+    hits: 30,
+    page: 1,
+    imageFlag: 1,
+    availability: 1,
+  };
+
+  if (minPrice) {
+    queryParams.minPrice = minPrice;
+  }
+  if (maxPrice) {
+    queryParams.maxPrice = maxPrice;
+  }
+
+  const fetchPage = (page) => {
+    const pageParams = { ...queryParams, page };
+    const paramString = Object.keys(pageParams)
+      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(pageParams[key])}`)
+      .join('&');
+    const response = UrlFetchApp.fetch(`${endpoint}?${paramString}`, {
+      method: 'get',
+      muteHttpExceptions: true,
+      headers: {
+        Referer: `${APP_ORIGIN}/`,
+        Origin: APP_ORIGIN,
+      },
+    });
+    return JSON.parse(response.getContentText());
+  };
+
+  const payload = fetchPage(1);
+
+  if (payload.error || payload.errors) {
+    return {
+      success: false,
+      error: payload.error_description || JSON.stringify(payload.error || payload.errors),
+      items: [],
+    };
+  }
+
+  let rawItems = payload.items || payload.Items || [];
+  if (Number(payload.pageCount) > 1) {
+    Utilities.sleep(1100);
+    const nextPayload = fetchPage(2);
+    if (!nextPayload.error && !nextPayload.errors) {
+      rawItems = rawItems.concat(nextPayload.items || nextPayload.Items || []);
+    }
+  }
+
+  const items = rawItems.map((itemWrapper) => {
+    const item = itemWrapper.item || itemWrapper.Item || itemWrapper;
+    const sourceImageUrl = item.mediumImageUrls
+      && item.mediumImageUrls[0]
+      && (item.mediumImageUrls[0].imageUrl || item.mediumImageUrls[0]);
+    return {
+      id: item.itemCode,
+      name: item.itemName,
+      price: `¥${Number(item.itemPrice).toLocaleString()}`,
+      brand: item.shopName,
+      shop: 'Rakuten',
+      imageUrl: sourceImageUrl && sourceImageUrl.replace(/_ex=128x128/, '_ex=600x600'),
+      itemUrl: item.itemUrl,
+    };
+  });
 
   return {
     success: true,
-    items: dummyItems,
+    items,
     query: params,
   };
 };
@@ -121,8 +202,13 @@ const getSheet = (name) => {
   return spreadsheet.insertSheet(name);
 };
 
-const createJsonOutput = (payload) => {
+const createJsonOutput = (payload, callback) => {
   const output = ContentService.createTextOutput();
+  if (callback && /^[A-Za-z_$][\w$]*$/.test(callback)) {
+    output.setMimeType(ContentService.MimeType.JAVASCRIPT);
+    output.setContent(`${callback}(${JSON.stringify(payload)});`);
+    return output;
+  }
   output.setMimeType(ContentService.MimeType.JSON);
   output.setContent(JSON.stringify(payload));
   return output;
