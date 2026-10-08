@@ -2,7 +2,7 @@
 
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwg0alV9GBUPBylCDX6kh4mi20UjcbBb9bO4F7ThGH_JcffaiZnwmGNPywnSCpzyAL0rA/exec";
 const API_TIMEOUT_MS = 15000;
-const STORAGE_KEY = "quizGameStatsV2";
+const LEGACY_STATS_STORAGE_KEY = "quizGameStatsV2";
 const MAX_REVIEW_QUESTIONS = 20;
 
 const screens = {
@@ -93,11 +93,16 @@ const quizState = {
   },
 };
 
-let playerStats = loadStats();
 let isStarting = false;
 let authStateReady = false;
 let authenticatedUser = null;
+let playerStats = loadStats();
 const PUBLIC_AUTH_SCREENS = new Set(["login", "signup"]);
+
+function getStatsStorageKey(user = authenticatedUser) {
+  const userId = user && user.id ? String(user.id) : "guest";
+  return `quizGameStatsV2:${userId}`;
+}
 
 function createDefaultStats() {
   return {
@@ -111,10 +116,16 @@ function createDefaultStats() {
   };
 }
 
-function loadStats() {
+function loadStats(user = authenticatedUser) {
+  const storageKey = getStatsStorageKey(user);
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if (!saved || typeof saved !== "object") return createDefaultStats();
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+    if (!saved || typeof saved !== "object") {
+      if (user && user.id && localStorage.getItem(LEGACY_STATS_STORAGE_KEY)) {
+        localStorage.removeItem(LEGACY_STATS_STORAGE_KEY);
+      }
+      return createDefaultStats();
+    }
     return {
       attempts: Math.max(0, Number(saved.attempts) || 0),
       totalAnswered: Math.max(0, Number(saved.totalAnswered) || 0),
@@ -137,7 +148,10 @@ function loadStats() {
 
 function saveStats() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(playerStats));
+    localStorage.setItem(getStatsStorageKey(authenticatedUser), JSON.stringify(playerStats));
+    if (localStorage.getItem(LEGACY_STATS_STORAGE_KEY)) {
+      localStorage.removeItem(LEGACY_STATS_STORAGE_KEY);
+    }
   } catch (error) {
     console.warn("記録をブラウザに保存できませんでした。", error);
   }
@@ -176,6 +190,7 @@ function showScreen(screenName) {
 function setAuthState(user) {
   authStateReady = true;
   authenticatedUser = user || null;
+  playerStats = loadStats(authenticatedUser);
   showLoading(false);
 
   const activeScreenName = Object.entries(screens)
@@ -189,6 +204,7 @@ function setAuthState(user) {
   }
 
   if (!activeScreenName) showScreen("start");
+  updateHomeStats();
 }
 
 function showLoading(isVisible, message = "通信中です...") {
